@@ -73,6 +73,7 @@ void get_processes(List l) {
       } else {
         fprintf(stderr, "pid: %ld file,error opening.", pid);
       }
+      fclose(fp);
     }
   }
   closedir(dir);
@@ -176,6 +177,7 @@ Process *find_init(List l) {
   return NULL;
 }
 void print_pstree_helper(Process *p, int show_pids_flag, int depth) {
+  assert(p!=NULL);
   for (int i = 0; i < depth; i++) {
     printf("|   ");
   }
