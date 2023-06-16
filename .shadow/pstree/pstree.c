@@ -185,7 +185,7 @@ void print_pstree(Process *init, int show_pids_flag) {
   } else {
     printf("%s", curr->name);
   }
-  if(!curr->children)
+  if(curr->children)
   {
     printf("─┬─");
   }
