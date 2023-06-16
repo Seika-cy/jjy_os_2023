@@ -73,6 +73,7 @@ void get_processes(List l) {
       }
     }
   }
+  closedir(dir);
 }
 
 void set_children(List l) {
