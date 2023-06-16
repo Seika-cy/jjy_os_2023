@@ -103,7 +103,7 @@ void sort(List l, int numeric_sort_flag) {
   assert(l != NULL);
   ListNode *cur = l->next;
   while (cur != NULL) {
-
+    
     if (!cur->val.children) {
       continue;
     }
