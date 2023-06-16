@@ -48,6 +48,8 @@ void get_processes(List l) {
     fprintf(stderr, "/proc,error opening.");
   }
   ListNode *cur = l;
+  ListNode t;
+  t.next = NULL;
   while ((entry = readdir(dir)) != NULL) {
     if (entry->d_type == DT_DIR) {
       char *endptr;
@@ -62,7 +64,7 @@ void get_processes(List l) {
         int ppid = 0;
         fscanf(fp, "%ld %s %*c %d", &pid, name, &ppid);
         cur->next = (ListNode *)malloc(sizeof(ListNode));
-        cur->next->next = NULL;
+        memcpy(cur->next, &t, sizeof(ListNode));
         cur = cur->next;
         strncpy(cur->val.name, name + 1, strlen(name) - 2);
         cur->val.pid = pid;
