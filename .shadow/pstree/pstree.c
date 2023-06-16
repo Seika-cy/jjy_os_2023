@@ -89,8 +89,8 @@ void get_processes(List l) {
 
         cur->next = t;
         cur = cur->next;
-        printf("Added process: %s (pid: %d, ppid: %d)\n", cur->val.name,
-               cur->val.pid, cur->val.ppid);
+        fprintf(stderr, "Added process: %s (pid: %d, ppid: %d)\n",
+                cur->val.name, cur->val.pid, cur->val.ppid);
       } else {
         fprintf(stderr, "error: open pid: %ld file", pid);
       }
