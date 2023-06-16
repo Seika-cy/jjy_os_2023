@@ -67,6 +67,7 @@ void get_processes(List l) {
         t->val.pid = pid;
         t->val.ppid = ppid;
         t->val.children = NULL;
+        t->next = NULL;
 
         cur->next = t;
         cur = cur->next;
