@@ -68,6 +68,9 @@ void get_processes(List l) {
         cur->val.pid = pid;
         cur->val.ppid = ppid;
         cur->val.children = NULL;
+        printf("Added process: %s (pid: %d, ppid: %d)\n", cur->val.name,
+               cur->val.pid, cur->val.ppid);
+
       } else {
         fprintf(stderr, "pid: %ld file,error opening.", pid);
       }
@@ -103,7 +106,7 @@ void sort(List l, int numeric_sort_flag) {
   assert(l != NULL);
   ListNode *cur = l->next;
   while (cur != NULL) {
-    
+
     if (!cur->val.children) {
       continue;
     }
