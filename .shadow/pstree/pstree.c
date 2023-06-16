@@ -32,6 +32,24 @@ typedef struct ListNode {
 //   return 1;
 // }
 
+void free_children(Children c) {
+  ChildNode *cur = c;
+  while (cur != NULL) {
+    ChildNode *next = cur->next;
+    free(cur);
+    cur = next;
+  }
+}
+void free_list(List l) {
+  ListNode *cur = l->next;
+  while (cur != NULL) {
+    ListNode *next = cur->next;
+    free_children(cur->val.children);
+    free(cur);
+    cur = next;
+  }
+}
+
 void get_processes(List l) {
   assert(l != NULL);
   DIR *dir;
@@ -39,8 +57,8 @@ void get_processes(List l) {
   char path[PATH_MAX];
   dir = opendir("/proc");
   if (!dir) {
-    fprintf(stderr, "/proc,error opening.");
-    exit(1);
+    fprintf(stderr, "error: open dir /proc");
+    exit(0);
   }
   ListNode *cur = l;
 
@@ -59,6 +77,11 @@ void get_processes(List l) {
         fscanf(fp, "%ld %s %*c %d", &pid, name, &ppid);
         ListNode *t = (ListNode *)calloc(1, sizeof(ListNode));
         strncpy(t->val.name, name + 1, strlen(name) - 2);
+        if (t == NULL) {
+          fprintf(stderr, "error: malloc fault");
+          free_list(l);
+          exit(0);
+        }
         t->val.pid = pid;
         t->val.ppid = ppid;
         t->val.children = NULL;
@@ -68,9 +91,8 @@ void get_processes(List l) {
         cur = cur->next;
         printf("Added process: %s (pid: %d, ppid: %d)\n", cur->val.name,
                cur->val.pid, cur->val.ppid);
-      }
-      else {
-        fprintf(stderr, "pid: %ld file,error opening.", pid);
+      } else {
+        fprintf(stderr, "error: open pid: %ld file", pid);
       }
       fclose(fp);
     }
@@ -86,6 +108,11 @@ void set_children(List l) {
     while (cur_j != NULL) {
       if (cur_i->val.pid == cur_j->val.ppid) {
         Children children = (Children)calloc(1, sizeof(ChildNode));
+        if (children == NULL) {
+          fprintf(stderr, "error: malloc fault");
+          free_list(l);
+          exit(0);
+        }
         children->next = cur_i->val.children;
         children->val = &(cur_j->val);
         cur_i->val.children = children;
@@ -141,24 +168,6 @@ void sort_by_pid(Children c) {
       next = next->next;
     }
     cur = cur->next;
-  }
-}
-
-void free_children(Children c) {
-  ChildNode *cur = c;
-  while (cur != NULL) {
-    ChildNode *next = cur->next;
-    free(cur);
-    cur = next;
-  }
-}
-void free_list(List l) {
-  ListNode *cur = l;
-  while (cur != NULL) {
-    ListNode *next = cur->next;
-    free_children(cur->val.children);
-    free(cur);
-    cur = next;
   }
 }
 
@@ -225,17 +234,21 @@ int main(int argc, char *argv[]) {
       return 0;
     }
   }
-  List l = (List)calloc(1, sizeof(ListNode));
+
+  ListNode head;
+  head.next = NULL;
+  List l = &head;
 
   get_processes(l);
   Process *init = find_init(l);
   if (!init) {
     fprintf(stderr, "no find init.");
-    exit(1);
+    exit(0);
   }
   set_children(l);
   sort(l, numeric_sort_flag);
   print_pstree(init, show_pids_flag);
+
   free_list(l);
 
   return 0;
