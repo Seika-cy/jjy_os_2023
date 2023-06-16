@@ -177,49 +177,38 @@ Process *find_init(ProcessList pro_l) {
   }
   return NULL;
 }
-// void print_pstree(Process *init, int show_pids_flag) {
-
-// // TODO 横向打印进程树
-//   Process *curr = init;
-//   if (show_pids_flag) {
-//     printf("%s(%d)", curr->name, curr->pid);
-//   } else {
-//     printf("%s", curr->name);
-//   }
-//   if (curr->children) {
-//     if (curr->children->next == NULL) {
-//       printf("───");
-//     } else {
-//       printf("─┬─");
-//     }
-//   }
-//   putchar('\n');
-// }
-void print_pstree(Process *init, int show_pids_flag) {
-  if (show_pids_flag) {
-    printf("%s(%d)", init->name, init->pid);
-  } else {
-    printf("%s", init->name);
+void print_pstree_helper(Process *p, int show_pids_flag, int depth) {
+  for (int i = 0; i < depth; i++) {
+    printf("|   ");
   }
-  putchar('\n');
-  if (init->children != NULL) {
-    ChildNode *curr = init->children->next;
-    int depth = 1;
-    while (curr != NULL) {
-      for (int i = 0; i < depth; i++) {
-        printf("  "); // Two spaces for each level of depth
-      }
-      if (curr->next == NULL) {
-        printf("└─");
-      } else {
-        printf("├─");
-      }
-      print_pstree(curr->val, show_pids_flag);
-      curr = curr->next;
-    }
+  if (depth > 0) {
+    printf("|-- ");
+  }
+  printf("%s", p->name);
+  if (show_pids_flag) {
+    printf("(%d)", p->pid);
+  }
+  printf("\n");
+  Children children = p->children;
+  while (children != NULL) {
+    print_pstree_helper(children->val, show_pids_flag, depth + 1);
+    children = children->next;
   }
 }
 
+void print_pstree(Process *init, int show_pids_flag) {
+  assert(init != NULL);
+  printf("%s", init->name);
+  if (show_pids_flag) {
+    printf("(%d)", init->pid);
+  }
+  printf("\n");
+  Children children = init->children;
+  while (children != NULL) {
+    print_pstree_helper(children->val, show_pids_flag, 1);
+    children = children->next;
+  }
+}
 int main(int argc, char *argv[]) {
   // for (int i = 0; i < argc; i++) {
   //   assert(argv[i]);
