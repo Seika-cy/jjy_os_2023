@@ -62,7 +62,7 @@ void get_processes(List l) {
         char name[MAX_FILENAME + 2] = {0};
         int ppid = 0;
         fscanf(fp, "%ld %s %*c %d", &pid, name, &ppid);
-        ListNode *t = (ListNode *)malloc(sizeof(ListNode));
+        ListNode *t = (ListNode *)calloc(1, sizeof(ListNode));
         strncpy(t->val.name, name + 1, strlen(name) - 2);
         t->val.pid = pid;
         t->val.ppid = ppid;
@@ -89,7 +89,7 @@ void set_children(List l) {
     ListNode *cur_j = l->next;
     while (cur_j != NULL) {
       if (cur_i->val.pid == cur_j->val.ppid) {
-        Children children = (Children)malloc(sizeof(ChildNode));
+        Children children = (Children)calloc(1, sizeof(ChildNode));
         children->next = cur_i->val.children;
         children->val = &(cur_j->val);
         cur_i->val.children = children;
@@ -234,9 +234,7 @@ int main(int argc, char *argv[]) {
       return 0;
     }
   }
-  List l = (List)malloc(sizeof(ListNode));
-  l->val.children = NULL;
-  l->next = NULL;
+  List l = (List)calloc(1, sizeof(ListNode));
 
   get_processes(l);
   Process *init = find_init(l);
