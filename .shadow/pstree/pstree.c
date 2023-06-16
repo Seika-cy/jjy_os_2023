@@ -1,18 +1,12 @@
 #include <assert.h>
-#include <ctype.h>
 #include <dirent.h>
 #include <getopt.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-
-#define MAX_PATH 4096
-#define MAX_FILENAME 256
-#define INT_MAX 0x7FFFFFFF
 
 typedef struct Process {
-  char name[MAX_FILENAME];
+  char name[NAME_MAX];
   int pid;
   int ppid;
   struct ChildNode *children;
@@ -42,7 +36,7 @@ void get_processes(List l) {
   assert(l != NULL);
   DIR *dir;
   struct dirent *entry;
-  char path[MAX_PATH];
+  char path[PATH_MAX];
   dir = opendir("/proc");
   if (!dir) {
     fprintf(stderr, "/proc,error opening.");
@@ -56,10 +50,10 @@ void get_processes(List l) {
       if (*endptr != '\0') {
         continue;
       }
-      snprintf(path, MAX_PATH, "/proc/%ld/stat", pid);
+      snprintf(path, PATH_MAX, "/proc/%ld/stat", pid);
       FILE *fp = fopen(path, "r");
       if (fp) {
-        char name[MAX_FILENAME + 2] = {0};
+        char name[NAME_MAX + 2] = {0};
         int ppid = 0;
         fscanf(fp, "%ld %s %*c %d", &pid, name, &ppid);
         ListNode *t = (ListNode *)calloc(1, sizeof(ListNode));
