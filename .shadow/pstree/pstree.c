@@ -27,7 +27,7 @@ typedef struct ListNode {
 
   Process val;
   struct ListNode *next;
-} ListNode_pro, *List;
+} ListNode, *List;
 
 // int is_numerice(const char str[]) {
 //   for (size_t i = 0; i < strlen(str); i++) {
@@ -47,7 +47,7 @@ void get_processes(List l) {
   if (!dir) {
     fprintf(stderr, "/proc,error opening.");
   }
-  ListNode_pro *cur = l;
+  ListNode *cur = l;
   while ((entry = readdir(dir)) != NULL) {
     if (entry->d_type == DT_DIR) {
       char *endptr;
@@ -61,7 +61,7 @@ void get_processes(List l) {
         char name[MAX_FILENAME + 2] = {0};
         int ppid = 0;
         fscanf(fp, "%ld %s %*c %d", &pid, name, &ppid);
-        cur->next = (ListNode_pro *)malloc(sizeof(ListNode_pro));
+        cur->next = (ListNode *)malloc(sizeof(ListNode));
         cur->next->next = NULL;
         cur = cur->next;
         strncpy(cur->val.name, name + 1, strlen(name) - 2);
@@ -77,10 +77,10 @@ void get_processes(List l) {
 
 void set_children(List l) {
   assert(l != NULL);
-  ListNode_pro *cur_i = l;
+  ListNode *cur_i = l;
   while (cur_i->next != NULL) {
     cur_i = cur_i->next;
-    ListNode_pro *cur_j = l;
+    ListNode *cur_j = l;
     while (cur_j->next != NULL) {
       cur_j = cur_j->next;
       if (cur_i == cur_j) {
@@ -100,7 +100,7 @@ void sort_by_name(Children);
 void sort_by_pid(Children);
 void sort(List l, int numeric_sort_flag) {
   assert(l != NULL);
-  ListNode_pro *cur = l;
+  ListNode *cur = l;
   while (cur->next != NULL) {
     cur = cur->next;
     if (!cur->val.children) {
@@ -157,9 +157,9 @@ void free_children(Children c) {
   }
 }
 void free_list(List l) {
-  ListNode_pro *curr = l;
+  ListNode *curr = l;
   while (curr != NULL) {
-    ListNode_pro *next = curr->next;
+    ListNode *next = curr->next;
     free_children(curr->val.children);
     free(curr);
     curr = next;
@@ -167,7 +167,7 @@ void free_list(List l) {
 }
 
 Process *find_init(List l) {
-  ListNode_pro *cur = l;
+  ListNode *cur = l;
   while (cur->next != NULL) {
     cur = cur->next;
     if (cur->val.ppid == 0) {
@@ -233,7 +233,7 @@ int main(int argc, char *argv[]) {
       return 0;
     }
   }
-  List l = (List)malloc(sizeof(ListNode_pro));
+  List l = (List)malloc(sizeof(ListNode));
   l->val.children = NULL;
   l->next = NULL;
 
