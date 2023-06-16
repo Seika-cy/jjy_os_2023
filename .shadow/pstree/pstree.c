@@ -101,69 +101,67 @@ void sort_by_name(Children);
 void sort_by_pid(Children);
 void sort(List l, int numeric_sort_flag) {
   assert(l != NULL);
-  ListNode *cur = l;
-  while (cur->next != NULL) {
-    cur = cur->next;
+  ListNode *cur = l->next;
+  while (cur != NULL) {
+
     if (!cur->val.children) {
       continue;
     }
-    ChildNode head;
-    head.next = cur->val.children;
     if (numeric_sort_flag) {
-      sort_by_pid(&head);
+      sort_by_pid(cur->val.children);
     } else {
-      sort_by_name(&head);
+      sort_by_name(cur->val.children);
     }
-    cur->val.children = head.next;
+    cur = cur->next;
   }
 }
 
 void sort_by_name(Children c) {
-  ChildNode *curr = c->next;
-  while (curr != NULL) {
-    ChildNode *next = curr->next;
+  ChildNode *cur = c;
+  while (cur != NULL) {
+    ChildNode *next = cur->next;
     while (next != NULL) {
-      if (strcmp(curr->val->name, next->val->name) > 0) {
-        Process *temp = curr->val;
-        curr->val = next->val;
+      if (strcmp(cur->val->name, next->val->name) > 0) {
+        Process *temp = cur->val;
+        cur->val = next->val;
         next->val = temp;
       }
       next = next->next;
     }
-    curr = curr->next;
+    cur = cur->next;
   }
 }
 void sort_by_pid(Children c) {
-  ChildNode *curr = c->next;
-  while (curr != NULL) {
-    ChildNode *next = curr->next;
+  ChildNode *cur = c;
+  while (cur != NULL) {
+    ChildNode *next = cur->next;
     while (next != NULL) {
-      if (curr->val->pid > next->val->pid) {
-        Process *temp = curr->val;
-        curr->val = next->val;
+      if (cur->val->pid > next->val->pid) {
+        Process *temp = cur->val;
+        cur->val = next->val;
         next->val = temp;
       }
       next = next->next;
     }
-    curr = curr->next;
+    cur = cur->next;
   }
 }
 
 void free_children(Children c) {
-  ChildNode *curr = c;
-  while (curr != NULL) {
-    ChildNode *next = curr->next;
-    free(curr);
-    curr = next;
+  ChildNode *cur = c;
+  while (cur != NULL) {
+    ChildNode *next = cur->next;
+    free(cur);
+    cur = next;
   }
 }
 void free_list(List l) {
-  ListNode *curr = l;
-  while (curr != NULL) {
-    ListNode *next = curr->next;
-    free_children(curr->val.children);
-    free(curr);
-    curr = next;
+  ListNode *cur = l;
+  while (cur != NULL) {
+    ListNode *next = cur->next;
+    free_children(cur->val.children);
+    free(cur);
+    cur = next;
   }
 }
 
