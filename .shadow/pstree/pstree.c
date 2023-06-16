@@ -12,7 +12,7 @@
 #define INT_MAX 0x7FFFFFFF
 
 typedef struct Process {
-  char name[MAX_FILENAME];
+  char *name;
   int pid;
   int ppid;
   struct ChildNode *children;
@@ -23,11 +23,11 @@ typedef struct ChildNode {
   struct ChildNode *next;
 } ChildNode, *Children;
 
-typedef struct ListNode_pro {
+typedef struct ListNode {
 
   Process val;
-  struct ListNode_pro *next;
-} ListNode_pro, *ProcessList;
+  struct ListNode *next;
+} ListNode_pro, *List;
 
 // int is_numerice(const char str[]) {
 //   for (size_t i = 0; i < strlen(str); i++) {
@@ -38,8 +38,8 @@ typedef struct ListNode_pro {
 //   return 1;
 // }
 
-void get_processes(ProcessList pro_l) {
-  assert(pro_l != NULL);
+void get_processes(List l) {
+  assert(l != NULL);
   DIR *dir;
   struct dirent *entry;
   char path[MAX_PATH];
@@ -47,7 +47,7 @@ void get_processes(ProcessList pro_l) {
   if (!dir) {
     fprintf(stderr, "/proc,error opening.");
   }
-  ListNode_pro *cur = pro_l;
+  ListNode_pro *cur = l;
   while ((entry = readdir(dir)) != NULL) {
     if (entry->d_type == DT_DIR) {
       char *endptr;
@@ -76,12 +76,12 @@ void get_processes(ProcessList pro_l) {
   }
 }
 
-void set_children(ProcessList pro_l) {
-  assert(pro_l != NULL);
-  ListNode_pro *cur_i = pro_l;
+void set_children(List l) {
+  assert(l != NULL);
+  ListNode_pro *cur_i = l;
   while (cur_i->next != NULL) {
     cur_i = cur_i->next;
-    ListNode_pro *cur_j = pro_l;
+    ListNode_pro *cur_j = l;
     while (cur_j->next != NULL) {
       cur_j = cur_j->next;
       if (cur_i == cur_j) {
@@ -99,9 +99,9 @@ void set_children(ProcessList pro_l) {
 
 void sort_by_name(Children);
 void sort_by_pid(Children);
-void sort(ProcessList pro_l, int numeric_sort_flag) {
-  assert(pro_l != NULL);
-  ListNode_pro *cur = pro_l;
+void sort(List l, int numeric_sort_flag) {
+  assert(l != NULL);
+  ListNode_pro *cur = l;
   while (cur->next != NULL) {
     cur = cur->next;
     if (!cur->val.children) {
@@ -157,8 +157,8 @@ void free_children(Children c) {
     curr = next;
   }
 }
-void free_list(ProcessList pro_l) {
-  ListNode_pro *curr = pro_l;
+void free_list(List l) {
+  ListNode_pro *curr = l;
   while (curr != NULL) {
     ListNode_pro *next = curr->next;
     free_children(curr->val.children);
@@ -167,8 +167,8 @@ void free_list(ProcessList pro_l) {
   }
 }
 
-Process *find_init(ProcessList pro_l) {
-  ListNode_pro *cur = pro_l;
+Process *find_init(List l) {
+  ListNode_pro *cur = l;
   while (cur->next != NULL) {
     cur = cur->next;
     if (cur->val.ppid == 0) {
@@ -234,19 +234,19 @@ int main(int argc, char *argv[]) {
       return 0;
     }
   }
-  ProcessList pro_l = (ProcessList)malloc(sizeof(ListNode_pro));
-  pro_l->val.children = NULL;
-  pro_l->next = NULL;
+  List l = (List)malloc(sizeof(ListNode_pro));
+  l->val.children = NULL;
+  l->next = NULL;
 
-  get_processes(pro_l);
-  Process *init = find_init(pro_l);
+  get_processes(l);
+  Process *init = find_init(l);
   if (!init) {
     fprintf(stderr, "no find init.");
   }
-  set_children(pro_l);
-  sort(pro_l, numeric_sort_flag);
+  set_children(l);
+  sort(l, numeric_sort_flag);
   print_pstree(init, show_pids_flag);
-  free_list(pro_l);
+  free_list(l);
 
   return 0;
 }
