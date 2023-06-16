@@ -67,7 +67,7 @@ void get_processes(List l) {
         t->val.pid = pid;
         t->val.ppid = ppid;
         t->val.children = NULL;
-        
+
         cur->next = t;
         cur = cur->next;
         // printf("Added process: %s (pid: %d, ppid: %d)\n", cur->val.name,
@@ -83,22 +83,19 @@ void get_processes(List l) {
 
 void set_children(List l) {
   assert(l != NULL);
-  ListNode *cur_i = l;
-  while (cur_i->next != NULL) {
-    cur_i = cur_i->next;
-    ListNode *cur_j = l;
-    while (cur_j->next != NULL) {
-      cur_j = cur_j->next;
-      if (cur_i == cur_j) {
-        continue;
-      }
+  ListNode *cur_i = l->next;
+  while (cur_i != NULL) {
+    ListNode *cur_j = l->next;
+    while (cur_j != NULL) {
       if (cur_i->val.pid == cur_j->val.ppid) {
         Children children = (Children)malloc(sizeof(ChildNode));
         children->next = cur_i->val.children;
         children->val = &(cur_j->val);
         cur_i->val.children = children;
       }
+      cur_j = cur_j->next;
     }
+    cur_i = cur_i->next;
   }
 }
 
