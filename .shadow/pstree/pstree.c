@@ -64,8 +64,7 @@ void get_processes(List l) {
         cur->next = (ListNode_pro *)malloc(sizeof(ListNode_pro));
         cur->next->next = NULL;
         cur = cur->next;
-        name[strlen(name) - 1] = '\0';
-        strcpy(cur->val.name, name + 1);
+        strncpy(cur->val.name, name + 1, strlen(name) - 2);
         cur->val.pid = pid;
         cur->val.ppid = ppid;
         cur->val.children = NULL;
