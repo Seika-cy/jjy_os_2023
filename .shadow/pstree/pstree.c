@@ -202,7 +202,7 @@ void print_pstree(Process *init, int show_pids_flag) {
   if (show_pids_flag) {
     printf("(%d)", init->pid);
   }
-  
+  printf("\n");
   Children children = init->children;
   while (children != NULL) {
     print_pstree_helper(children->val, show_pids_flag, 1);
