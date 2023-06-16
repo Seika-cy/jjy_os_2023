@@ -105,14 +105,12 @@ void sort(List l, int numeric_sort_flag) {
   assert(l != NULL);
   ListNode *cur = l->next;
   while (cur != NULL) {
-
-    if (!cur->val.children) {
-      continue;
-    }
-    if (numeric_sort_flag) {
-      sort_by_pid(cur->val.children);
-    } else {
-      sort_by_name(cur->val.children);
+    if (cur->val.children) {
+      if (numeric_sort_flag) {
+        sort_by_pid(cur->val.children);
+      } else {
+        sort_by_name(cur->val.children);
+      }
     }
     cur = cur->next;
   }
