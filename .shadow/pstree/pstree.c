@@ -40,6 +40,7 @@ void get_processes(List l) {
   dir = opendir("/proc");
   if (!dir) {
     fprintf(stderr, "/proc,error opening.");
+    exit(1);
   }
   ListNode *cur = l;
 
@@ -65,9 +66,10 @@ void get_processes(List l) {
 
         cur->next = t;
         cur = cur->next;
-        // printf("Added process: %s (pid: %d, ppid: %d)\n", cur->val.name,
-        //        cur->val.pid, cur->val.ppid);
-      } else {
+        printf("Added process: %s (pid: %d, ppid: %d)\n", cur->val.name,
+               cur->val.pid, cur->val.ppid);
+      }
+      else {
         fprintf(stderr, "pid: %ld file,error opening.", pid);
       }
       fclose(fp);
@@ -204,11 +206,6 @@ void print_pstree(Process *init, int show_pids_flag) {
   }
 }
 int main(int argc, char *argv[]) {
-  // for (int i = 0; i < argc; i++) {
-  //   assert(argv[i]);
-  //   printf("argv[%d] = %s\n", i, argv[i]);
-  // }
-  // assert(!argv[argc]);
   struct option opts[] = {{"show-pids", 0, NULL, 'p'},
                           {"numeric-sort", 0, NULL, 'n'},
                           {"version", 0, NULL, 'V'}};
@@ -234,6 +231,7 @@ int main(int argc, char *argv[]) {
   Process *init = find_init(l);
   if (!init) {
     fprintf(stderr, "no find init.");
+    exit(1);
   }
   set_children(l);
   sort(l, numeric_sort_flag);
