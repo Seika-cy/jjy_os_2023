@@ -48,8 +48,7 @@ void get_processes(List l) {
     fprintf(stderr, "/proc,error opening.");
   }
   ListNode *cur = l;
-  ListNode t;
-  t.next = NULL;
+
   while ((entry = readdir(dir)) != NULL) {
     if (entry->d_type == DT_DIR) {
       char *endptr;
@@ -63,13 +62,14 @@ void get_processes(List l) {
         char name[MAX_FILENAME + 2] = {0};
         int ppid = 0;
         fscanf(fp, "%ld %s %*c %d", &pid, name, &ppid);
-        cur->next = (ListNode *)malloc(sizeof(ListNode));
-        memcpy(cur->next, &t, sizeof(ListNode));
+        ListNode *t = (ListNode *)malloc(sizeof(ListNode));
+        strncpy(t->val.name, name + 1, strlen(name) - 2);
+        t->val.pid = pid;
+        t->val.ppid = ppid;
+        t->val.children = NULL;
+        
+        cur->next = t;
         cur = cur->next;
-        strncpy(cur->val.name, name + 1, strlen(name) - 2);
-        cur->val.pid = pid;
-        cur->val.ppid = ppid;
-        cur->val.children = NULL;
         // printf("Added process: %s (pid: %d, ppid: %d)\n", cur->val.name,
         //        cur->val.pid, cur->val.ppid);
       } else {
@@ -179,7 +179,7 @@ Process *find_init(List l) {
   return NULL;
 }
 void print_pstree_helper(Process *p, int show_pids_flag, int depth) {
-  assert(p!=NULL);
+  assert(p != NULL);
   for (int i = 0; i < depth; i++) {
     printf("|   ");
   }
