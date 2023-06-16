@@ -12,7 +12,7 @@
 #define INT_MAX 0x7FFFFFFF
 
 typedef struct Process {
-  char *name;
+  char name[MAX_FILENAME];
   int pid;
   int ppid;
   struct ChildNode *children;
